@@ -18,3 +18,8 @@ run name: (check name) (fmt name) (clippy name)
 
 clean:
     cargo clean
+
+done name: (run name)
+    git add _template days/day-{{name}}ss
+    git cm "Done with {{name}}"
+    git push
