@@ -20,49 +20,30 @@ where
 }
 
 fn part_one(lines: Vec<String>) -> Result<i32> {
-    let mut ctr = 0;
     let lines: Vec<i32> = lines
         .iter()
         .map(|val| str::parse::<i32>(val).expect("Could not parse i32"))
         .collect();
 
-    let mut lines_iter = lines.iter();
-    let mut prev = lines_iter.next().expect("No first entry");
-
-    for current in lines_iter {
-        if prev < current {
-            ctr += 1;
-        }
-        prev = current;
-    }
-    Ok(ctr)
+    Ok(lines
+        .iter()
+        .tuple_windows()
+        .filter(|(prev, current)| prev < current)
+        .count() as i32)
 }
 
 fn part_two(lines: Vec<String>) -> Result<i32> {
-    let mut ctr = 0;
-
     let lines: Vec<i32> = lines
         .iter()
         .map(|val| str::parse::<i32>(val).expect("Could not parse i32"))
         .collect();
 
-    let mut windows = lines.iter().tuple_windows::<(_, _, _)>();
-
-    let prev_window = windows
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("No first entry"))?;
-
-    let mut prev_sum = prev_window.0 + prev_window.1 + prev_window.2;
-
-    for current_window in windows {
-        let current_sum = current_window.0 + current_window.1 + current_window.2;
-
-        if prev_sum < current_sum {
-            ctr += 1;
-        }
-        prev_sum = current_sum;
-    }
-    Ok(ctr)
+    return Ok(lines
+        .iter()
+        .tuple_windows::<(_, _, _)>()
+        .tuple_windows()
+        .filter(|(prev, current)| prev.0 + prev.1 + prev.2 < current.0 + current.1 + current.2)
+        .count() as i32);
 }
 
 fn main() -> Result<()> {
