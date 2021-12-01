@@ -20,6 +20,6 @@ clean:
     cargo clean
 
 done name: (run name)
-    git add _template days/day-{{name}}ss
+    git add _template days/day-{{name}}
     git cm "Done with {{name}}"
     git push
