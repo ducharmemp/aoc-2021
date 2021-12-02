@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -18,10 +18,10 @@ where
     P: AsRef<Path>,
 {
     let file = File::open(filename)?;
-    Ok(io::BufReader::new(file)
+    io::BufReader::new(file)
         .lines()
-        .map(|val| val.expect("Could not read line"))
-        .collect())
+        .map(|val| val.context("Could not read line"))
+        .collect()
 }
 
 fn part_one(lines: &Vec<String>) -> Result<i32> {
