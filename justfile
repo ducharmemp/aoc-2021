@@ -11,7 +11,7 @@ fmt name:
     cd days/day-{{name}} && cargo fmt
 
 clippy name: 
-    cd days/day-{{name}} && cargo clippy --fix
+    cd days/day-{{name}} && cargo clippy --fix --allow-dirty --allow-staged
 
 run name: (check name) (fmt name) (clippy name)
     cargo run day-{{name}}
