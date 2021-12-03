@@ -32,8 +32,8 @@ fn main() -> Result<()> {
         .join(INPUT_FILE_PATH);
 
     let input = read_lines(&input_path)?;
-    println!("{}", part_one(&input)?);
-    println!("{}", part_two(&input)?);
+    println!("{:?}", part_one(&input)?);
+    println!("{:?}", part_two(&input)?);
 
     Ok(())
 }
