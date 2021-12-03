@@ -52,6 +52,10 @@ fn part_one(lines: &Vec<String>) -> Result<u32> {
     Ok(gamma * epsilon)
 }
 
+fn bit_at(number: u32, pos: usize) -> u32 {
+    (number & (1 << pos)) >> pos
+}
+
 fn part_two(lines: &Vec<String>) -> Result<u32> {
     let first_line = lines
         .first()
@@ -70,10 +74,7 @@ fn part_two(lines: &Vec<String>) -> Result<u32> {
         }
         let shift = number_length - index - 1;
 
-        let nth_bits: Vec<u32> = o2_numbers
-            .iter()
-            .map(|line| (line & (1 << shift)) >> shift)
-            .collect();
+        let nth_bits: Vec<u32> = o2_numbers.iter().map(|line| bit_at(*line, shift)).collect();
         let mut map = HashMap::new();
         for bit in nth_bits.iter() {
             let count = map.entry(bit).or_insert_with(|| 0);
@@ -81,13 +82,13 @@ fn part_two(lines: &Vec<String>) -> Result<u32> {
         }
         if map.get(&0) > map.get(&1) {
             for number in o2_numbers.clone() {
-                if (number & (1 << shift)) >> shift == 0 {
+                if bit_at(number, shift) == 0 {
                     o2_numbers.remove(&number);
                 }
             }
         } else {
             for number in o2_numbers.clone() {
-                if (number & (1 << shift)) >> shift == 1 {
+                if bit_at(number, shift) == 1 {
                     o2_numbers.remove(&number);
                 }
             }
@@ -101,24 +102,22 @@ fn part_two(lines: &Vec<String>) -> Result<u32> {
         let shift = number_length - index - 1;
         let nth_bits: Vec<u32> = co2_numbers
             .iter()
-            .map(|line| (line & (1 << shift)) >> shift)
+            .map(|line| bit_at(*line, shift))
             .collect();
         let mut map = HashMap::new();
         for bit in nth_bits.iter() {
             let count = map.entry(bit).or_insert_with(|| 0);
             *count += 1;
         }
-        dbg!(&map);
         if map.get(&0) <= map.get(&1) {
-            dbg!(&map);
             for number in co2_numbers.clone() {
-                if (number & (1 << shift)) >> shift == 0 {
+                if bit_at(number, shift) == 0 {
                     co2_numbers.remove(&number);
                 }
             }
         } else {
             for number in co2_numbers.clone() {
-                if (number & (1 << shift)) >> shift == 1 {
+                if bit_at(number, shift) == 1 {
                     co2_numbers.remove(&number);
                 }
             }
