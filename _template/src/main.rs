@@ -17,11 +17,11 @@ where
         .collect()
 }
 
-fn part_one(lines: &Vec<String>) -> Result<()> {
+fn part_one(lines: &[String]) -> Result<()> {
     Ok(())
 }
 
-fn part_two(lines: &Vec<String>) -> Result<()> {
+fn part_two(lines: &[String]) -> Result<()> {
     Ok(())
 }
 
