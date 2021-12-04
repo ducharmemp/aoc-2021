@@ -49,29 +49,31 @@ fn part_one(numbers: &[u32], num_bits: usize) -> Result<u32> {
     Ok(gamma * epsilon)
 }
 
-fn filter_by(mut numbers: Vec<u32>, num_bits: usize, order: FilterOrder) -> Vec<u32> {
-    for shift in (0..num_bits).rev() {
-        if numbers.len() == 1 {
-            break;
-        }
+fn filter_by(numbers: Vec<u32>, num_bits: usize, order: FilterOrder) -> Vec<u32> {
+    (0..num_bits)
+        .rev()
+        .fold_while(numbers, |acc, shift| {
+            if acc.len() == 1 {
+                return itertools::FoldWhile::Done(acc);
+            }
 
-        let count: HashMap<u32, usize> = numbers.iter().map(|line| bit_at(line, shift)).counts();
+            let count: HashMap<u32, usize> = acc.iter().map(|line| bit_at(line, shift)).counts();
 
-        let filter_val = match (&order, count.get(&0) > count.get(&1)) {
-            (FilterOrder::MostSignificant, true) => 0,
-            (FilterOrder::MostSignificant, false) => 1,
-            (FilterOrder::LeastSignificant, false) => 0,
-            (FilterOrder::LeastSignificant, true) => 1,
-        };
+            let filter_val = match (&order, count.get(&0) > count.get(&1)) {
+                (FilterOrder::MostSignificant, true) => 0,
+                (FilterOrder::MostSignificant, false) => 1,
+                (FilterOrder::LeastSignificant, false) => 0,
+                (FilterOrder::LeastSignificant, true) => 1,
+            };
 
-        numbers = numbers
-            .iter()
-            .filter(|val| bit_at(*val, shift) == filter_val)
-            .cloned()
-            .collect();
-    }
-
-    numbers
+            let acc = acc
+                .iter()
+                .filter(|val| bit_at(*val, shift) == filter_val)
+                .cloned()
+                .collect();
+            itertools::FoldWhile::Continue(acc)
+        })
+        .into_inner()
 }
 
 fn part_two(lines: &[u32], num_bits: usize) -> Result<u32> {
@@ -101,6 +103,8 @@ fn main() -> Result<()> {
 
     println!("{:?}", part_one(&input, num_bits)?);
     println!("{:?}", part_two(&input, num_bits)?);
+    assert_eq!(part_one(&input, num_bits)?, 1092896);
+    assert_eq!(part_two(&input, num_bits)?, 4672151);
 
     Ok(())
 }
