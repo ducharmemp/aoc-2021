@@ -98,14 +98,6 @@ impl TryFrom<&str> for Line {
     }
 }
 
-fn sorted_range(start: i32, end: i32) -> std::ops::RangeInclusive<i32> {
-    if start > end {
-        std::ops::RangeInclusive::new(end, start)
-    } else {
-        std::ops::RangeInclusive::new(start, end)
-    }
-}
-
 impl IntoIterator for Line {
     type Item = Point;
 
@@ -166,16 +158,15 @@ fn part_one(lines: &[String]) -> Result<i32> {
         .ok_or_else(|| anyhow::anyhow!("Couldn't determine biggest y value"))?;
 
     let mut grid: Vec<Vec<i32>> = vec![vec![0; (max_x + 1) as usize]; (max_y + 1) as usize];
+    let lines = lines
+        .iter()
+        .filter(|line| line.start.x == line.end.x || line.start.y == line.end.y)
+        .cloned()
+        .collect::<Vec<_>>();
 
     for line in lines {
-        if line.start.x == line.end.x {
-            for y in sorted_range(line.start.y, line.end.y) {
-                grid[y as usize][line.start.x as usize] += 1;
-            }
-        } else if line.start.y == line.end.y {
-            for x in sorted_range(line.start.x, line.end.x) {
-                grid[line.start.y as usize][x as usize] += 1;
-            }
+        for point in line {
+            grid[point.y as usize][point.x as usize] += 1;
         }
     }
 
@@ -231,7 +222,7 @@ fn main() -> Result<()> {
     let input = read_lines(&input_path)?;
     println!("{:?}", part_one(&input)?);
     println!("{:?}", part_two(&input)?);
-    // assert_eq!(part_one(&input)?, 5147);
+    assert_eq!(part_one(&input)?, 5147);
     assert_eq!(part_two(&input)?, 16925);
 
     Ok(())
