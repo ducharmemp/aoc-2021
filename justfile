@@ -20,6 +20,9 @@ clean:
     cargo clean
 
 done name: (run name)
-    git add _template days/day-{{name}}
+    git add _template days/day-{{name}} justfile
     git cm "Done with {{name}}"
     git push
+
+docs:
+    cargo watch -s 'cargo doc && http target/doc'
