@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-use itertools::Itertools;
 use std::convert::TryFrom;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -20,13 +19,17 @@ where
         .collect()
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
-struct Point {
+#[derive(Debug, Clone, Default, PartialEq, Eq, Ord, PartialOrd)]
+pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 
 impl Point {
+    pub fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
+    }
+
     pub fn direction(&self) -> Self {
         Self {
             x: self.x.clamp(-1, 1),
@@ -71,7 +74,7 @@ impl Add for Point {
 }
 
 #[derive(Debug, Clone, Default)]
-struct Line {
+pub struct Line {
     pub start: Point,
     pub end: Point,
 }
@@ -113,7 +116,7 @@ impl IntoIterator for Line {
     }
 }
 
-struct LineIterator {
+pub struct LineIterator {
     line: Line,
     current_position: Point,
 }
@@ -131,14 +134,14 @@ impl Iterator for LineIterator {
     type Item = Point;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.current_position == self.line.end {
+        let vector = self.line.end.clone() - self.line.start.clone();
+        let direction = vector.direction();
+
+        if self.current_position == (self.line.end.clone() + direction.clone()) {
             return None;
         }
 
-        let vector = self.line.end.clone() - self.line.start.clone();
-        let direction = vector.direction();
         let position = self.current_position.clone();
-        dbg!(&vector, &direction, &position);
         self.current_position = self.current_position.clone() + direction;
         Some(position)
     }
@@ -204,34 +207,6 @@ fn part_two(lines: &[String]) -> Result<i32> {
 
     let mut grid: Vec<Vec<i32>> = vec![vec![0; (max_x + 1) as usize]; (max_y + 1) as usize];
 
-    for line in lines.clone() {
-        for point in line.into_iter() {
-            dbg!(point);
-        }
-    }
-
-    // for line in lines {
-    //     if line.start.x == line.end.x {
-    //         for y in sorted_range(line.start.y, line.end.y) {
-    //             grid[y as usize][line.start.x as usize] += 1;
-    //         }
-    //     } else if line.start.y == line.end.y {
-    //         for x in sorted_range(line.start.x, line.end.x) {
-    //             grid[line.start.y as usize][x as usize] += 1;
-    //         }
-    //     } else {
-    //         let mut x_val: i32 = line.start.x as i32;
-    //         let x_add_value: i32 = if line.start.x > line.end.x { -1 } else { 1 };
-    //         let mut y_val: i32 = line.start.y as i32;
-    //         let y_add_value: i32 = if line.start.y > line.end.y { -1 } else { 1 };
-
-    //         while y_val != (line.end.y as i32 + y_add_value) {
-    //             grid[y_val as usize][x_val as usize] += 1;
-    //             y_val += y_add_value;
-    //             x_val += x_add_value;
-    //         }
-    //     }
-    // }
     for line in lines {
         for point in line {
             grid[point.y as usize][point.x as usize] += 1;
@@ -260,4 +235,53 @@ fn main() -> Result<()> {
     assert_eq!(part_two(&input)?, 16925);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn iterator_produces_correct_values() {
+        let line: Line = "8,0 -> 0,8".try_into().unwrap();
+        let points = line.into_iter().collect::<Vec<Point>>();
+        assert_eq!(
+            points,
+            vec![
+                Point::new(8, 0),
+                Point::new(7, 1),
+                Point::new(6, 2),
+                Point::new(5, 3),
+                Point::new(4, 4),
+                Point::new(3, 5),
+                Point::new(2, 6),
+                Point::new(1, 7),
+                Point::new(0, 8)
+            ]
+        )
+    }
+
+    #[test]
+    fn iterator_produces_correct_values_rev() {
+        let line: Line = "0,8 -> 8,0".try_into().unwrap();
+        let points = line.into_iter().collect::<Vec<Point>>();
+        assert_eq!(
+            points,
+            vec![
+                Point::new(8, 0),
+                Point::new(7, 1),
+                Point::new(6, 2),
+                Point::new(5, 3),
+                Point::new(4, 4),
+                Point::new(3, 5),
+                Point::new(2, 6),
+                Point::new(1, 7),
+                Point::new(0, 8)
+            ]
+            .iter()
+            .rev()
+            .cloned()
+            .collect::<Vec<Point>>()
+        )
+    }
 }
