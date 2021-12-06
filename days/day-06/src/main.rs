@@ -28,11 +28,11 @@ fn hash_simulate(inputs: &[u64], max_steps: u64) -> Result<u64> {
 
         for (key, value) in acc {
             if key == 0 {
-                *new_hash.entry(RESET_VALUE).or_insert(0) += value;
-                *new_hash.entry(SPAWN_VALUE).or_insert(0) += value;
+                *new_hash.entry(RESET_VALUE).or_default() += value;
+                *new_hash.entry(SPAWN_VALUE).or_default() += value;
             } else {
                 let next_key = key - 1;
-                *new_hash.entry(next_key).or_insert(0) += value;
+                *new_hash.entry(next_key).or_default() += value;
             };
         }
 
