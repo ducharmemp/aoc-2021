@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-use itertools::Itertools;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -18,7 +17,7 @@ where
         .collect()
 }
 
-fn part_one(lines: &[String]) -> Result<i64> {
+fn parse_first_line(lines: &[String]) -> Result<Vec<i64>> {
     let line = lines
         .first()
         .ok_or_else(|| anyhow::anyhow!("Could not get input line"))?;
@@ -26,7 +25,11 @@ fn part_one(lines: &[String]) -> Result<i64> {
         .split(',')
         .map(|val| val.parse::<i64>().context("Could not parse i64"))
         .collect();
-    let inputs = inputs?;
+    inputs
+}
+
+fn part_one(lines: &[String]) -> Result<i64> {
+    let inputs = parse_first_line(lines)?;
 
     let min_horizontal = *inputs
         .iter()
@@ -36,30 +39,20 @@ fn part_one(lines: &[String]) -> Result<i64> {
         .iter()
         .max()
         .ok_or_else(|| anyhow::anyhow!("Couldn't determine max"))?;
-    let mut final_costs: Vec<i64> = vec![];
-    for final_position in min_horizontal..=max_horizontal {
-        let costs = inputs
+    let final_costs = (min_horizontal..=max_horizontal).map(|final_position| {
+        inputs
             .iter()
-            .map(|val| (val - final_position).abs())
-            .collect::<Vec<i64>>();
-        final_costs.push(costs.iter().sum());
-    }
+            .map(move |val| (val - final_position).abs())
+            .sum()
+    });
 
-    Ok(*final_costs
-        .iter()
+    final_costs
         .min()
-        .ok_or_else(|| anyhow::anyhow!("Could not determine final min cost"))?)
+        .ok_or_else(|| anyhow::anyhow!("Could not determine final min cost"))
 }
 
 fn part_two(lines: &[String]) -> Result<i64> {
-    let line = lines
-        .first()
-        .ok_or_else(|| anyhow::anyhow!("Could not get input line"))?;
-    let inputs: Result<Vec<i64>> = line
-        .split(',')
-        .map(|val| val.parse::<i64>().context("Could not parse i64"))
-        .collect();
-    let inputs = inputs?;
+    let inputs = parse_first_line(lines)?;
 
     let min_horizontal = *inputs
         .iter()
@@ -69,22 +62,20 @@ fn part_two(lines: &[String]) -> Result<i64> {
         .iter()
         .max()
         .ok_or_else(|| anyhow::anyhow!("Couldn't determine max"))?;
-    let mut final_costs: Vec<i64> = vec![];
-    for final_position in min_horizontal..=max_horizontal {
-        let costs = inputs
+
+    let final_costs = (min_horizontal..=max_horizontal).map(|final_position| {
+        inputs
             .iter()
-            .map(|val| {
+            .map(move |val| {
                 let abs_fuel_cost = (val - final_position).abs();
                 (abs_fuel_cost * (abs_fuel_cost + 1)) / 2
             })
-            .collect::<Vec<i64>>();
-        final_costs.push(costs.iter().sum());
-    }
+            .sum()
+    });
 
-    Ok(*final_costs
-        .iter()
+    final_costs
         .min()
-        .ok_or_else(|| anyhow::anyhow!("Could not determine final min cost"))?)
+        .ok_or_else(|| anyhow::anyhow!("Could not determine final min cost"))
 }
 
 fn main() -> Result<()> {
