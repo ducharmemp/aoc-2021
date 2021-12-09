@@ -11,14 +11,13 @@ const INPUT_FILE_PATH: &str = "../data/input.txt";
 #[derive(Debug, Clone, Default)]
 struct BasinTree {
     neighbors: [Option<Box<BasinTree>>; 4],
-    value: u32,
 }
 
 impl BasinTree {
     fn from_grid(
         start_x: usize,
         start_y: usize,
-        grid: &Vec<Vec<u32>>,
+        grid: &[Vec<u32>],
         visited: &Mutex<HashSet<(usize, usize)>>,
     ) -> Option<Box<Self>> {
         let current_value = grid
@@ -43,10 +42,7 @@ impl BasinTree {
             BasinTree::from_grid(start_x, start_y - 1, grid, visited),
         ];
 
-        Some(Box::new(Self {
-            value: current_value,
-            neighbors,
-        }))
+        Some(Box::new(Self { neighbors }))
     }
 
     fn size(&self) -> usize {
