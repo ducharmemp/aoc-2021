@@ -77,7 +77,7 @@ fn parse_line(line: &str) -> Result<Vec<u32>> {
     heights
 }
 
-fn get_neighbor_value(heights: &Vec<Vec<u32>>, x: usize, y: usize) -> u32 {
+fn get_neighbor_value(heights: &[Vec<u32>], x: usize, y: usize) -> u32 {
     heights
         .get(y)
         .map(|row| row.get(x))
@@ -86,7 +86,7 @@ fn get_neighbor_value(heights: &Vec<Vec<u32>>, x: usize, y: usize) -> u32 {
         .unwrap_or(u32::MAX)
 }
 
-fn find_low_points(heights: &Vec<Vec<u32>>) -> Vec<(usize, usize)> {
+fn find_low_points(heights: &[Vec<u32>]) -> Vec<(usize, usize)> {
     let points = heights.iter().enumerate().flat_map(|(y, row)| {
         row.iter().enumerate().map(move |(x, column)| {
             let top = get_neighbor_value(heights, x, y - 1);
