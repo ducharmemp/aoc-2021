@@ -71,18 +71,18 @@ fn part_one(lines: &[String]) -> Result<u32> {
         .iter()
         .map(|line| parse_line(line))
         .map(|line| validate_line(&line))
-        .filter(|res| res.is_err());
-    let mut total_points = 0;
-    for error in errors {
-        let error = error.unwrap_err();
-        total_points += match error.as_str() {
+        .filter(|res| res.is_err())
+        .map(|res| res.unwrap_err());
+
+    let total_points = errors.fold(0, |acc, error| {
+        acc + match error.as_str() {
             ")" => 3,
             "]" => 57,
             "}" => 1197,
             ">" => 25137,
             _ => unreachable!(),
-        };
-    }
+        }
+    });
     Ok(total_points)
 }
 
@@ -94,24 +94,20 @@ fn part_two(lines: &[String]) -> Result<i64> {
         .filter(|res| res.is_ok());
 
     let complete_lines = incomplete_lines.map(|line| complete_line(&line.expect("Expected line")));
-    let mut scores = vec![];
-    for line in complete_lines {
-        let mut total_points = 0;
-        for expected_closing in line {
-            total_points *= 5;
-            total_points += match expected_closing.as_str() {
+    let total_scores = complete_lines.map(|line| {
+        line.iter().fold(0, |acc, expected_closing| {
+            acc + match expected_closing.as_str() {
                 ")" => 1,
                 "]" => 2,
                 "}" => 3,
                 ">" => 4,
                 _ => unreachable!(),
-            };
-        }
-        scores.push(total_points);
-    }
-
-    scores.sort_unstable();
-    Ok(scores[scores.len() / 2])
+            }
+        })
+    });
+    let mut total_scores: Vec<_> = total_scores.collect();
+    total_scores.sort_unstable();
+    Ok(total_scores[total_scores.len() / 2])
 }
 
 fn main() -> Result<()> {
