@@ -95,7 +95,8 @@ fn part_two(lines: &[String]) -> Result<i64> {
 
     let complete_lines = incomplete_lines.map(|line| complete_line(&line.expect("Expected line")));
     let total_scores = complete_lines.map(|line| {
-        line.iter().fold(0, |acc, expected_closing| {
+        line.iter().fold(0_i64, |acc, expected_closing| {
+            let acc = acc * 5;
             acc + match expected_closing.as_str() {
                 ")" => 1,
                 "]" => 2,
