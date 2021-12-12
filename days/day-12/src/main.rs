@@ -96,7 +96,6 @@ fn find_paths_for_target<'a>(
         return 1;
     }
 
-    // let x = HashSet::new();
     match graph.value_at(current_node) {
         NodeType::Small => {
             if !visits.insert(current_node) {
