@@ -17,11 +17,17 @@ where
         .collect()
 }
 
+fn parse_line(line: &str) -> Result<i64> {
+
+}
+
 fn part_one(lines: &[String]) -> Result<()> {
+    let lines = lines.iter().map(|line| parse_line(line));
     Ok(())
 }
 
 fn part_two(lines: &[String]) -> Result<()> {
+    let lines = lines.iter().map(|line| parse_line(line));
     Ok(())
 }
 
