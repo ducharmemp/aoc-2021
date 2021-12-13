@@ -52,7 +52,7 @@ impl Grid {
                     self.points.iter().partition(|(_, y)| new_y_size < y);
                 let adjusted_points: Vec<Coord> = points_greater_than_fold
                     .into_iter()
-                    .map(|(x, y)| (x, new_y_size - (y - new_y_size)))
+                    .map(|(x, y)| (x, 2 * new_y_size - y))
                     .collect();
                 self.points = HashSet::from_iter(
                     points_less_than_fold
@@ -66,7 +66,7 @@ impl Grid {
                     self.points.iter().partition(|(x, _)| new_x_size < x);
                 let adjusted_points: Vec<Coord> = points_greater_than_fold
                     .into_iter()
-                    .map(|(x, y)| (new_x_size - (x - new_x_size), y))
+                    .map(|(x, y)| (2 * new_x_size - x, y))
                     .collect();
                 self.points = HashSet::from_iter(
                     points_less_than_fold
