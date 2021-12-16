@@ -62,21 +62,22 @@ fn part_two(lines: &[String]) -> Result<usize> {
     let row_len = lines.len();
     let col_len = lines[0].len();
 
-    let lines = (0..(5 * row_len))
-        .map(|x| {
+    let lines: Vec<Vec<usize>> = (0..(5 * row_len))
+        .map(|y| {
             (0..(5 * col_len))
-                .map(|y| {
-                    let cost =
-                        lines[x % lines.len()][y % col_len] + (x / lines.len()) + (y / col_len);
+                .map(|x| {
+                    let y_index = y % row_len;
+                    let x_index = x % col_len;
+                    let cost = lines[y_index][x_index] + (x / col_len) + (y / row_len);
                     if cost < 10 {
                         cost
                     } else {
                         cost - 9
                     }
                 })
-                .collect::<Vec<_>>()
+                .collect()
         })
-        .collect::<Vec<_>>();
+        .collect();
 
     let graph = build_graph(&lines);
 
