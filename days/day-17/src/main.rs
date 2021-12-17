@@ -114,7 +114,7 @@ impl Probe {
         (self.position.x, self.position.y)
     }
 
-    fn position<'a>(&'a self) -> &'a Point {
+    fn position(&self) -> &Point {
         &self.position
     }
 }
@@ -199,8 +199,7 @@ fn part_two(lines: &[String]) -> Result<usize> {
             Some(steps)
         });
 
-    let vals: Vec<Vec<_>> = vals.collect();
-    Ok(vals.len())
+    Ok(vals.count())
 }
 
 fn main() -> Result<()> {
